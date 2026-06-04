@@ -48,7 +48,7 @@
     <script>
     async function simpanData() {
         try {
-            const response = await fetch('/api/jadwals', {
+            const response = await fetch('/jadwals', {
 
                 method: 'POST',
                 credentials: 'include',

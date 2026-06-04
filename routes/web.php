@@ -33,4 +33,10 @@ Route::get(
     }
 )->middleware('auth');
 
+Route::middleware('auth')->group(function () {
+    Route::post('/jadwals', [JadwalController::class, 'store']);
+    Route::post('/jadwals/{jadwal}', [JadwalController::class, 'update']);
+    Route::delete('/jadwals/{jadwal}', [JadwalController::class, 'destroy']);
+});
+
 require __DIR__.'/auth.php';

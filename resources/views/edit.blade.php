@@ -56,7 +56,7 @@
 
         try {
             const response = await fetch(
-                '/api/jadwals/' + id, {
+                '/jadwals/' + id, {
                     method: 'POST',
                     credentials: 'include',
 

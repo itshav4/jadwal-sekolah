@@ -109,9 +109,9 @@
 
                         <tr>
 
-                            <<td>{{ $item->jam }}</td>
-                                <td>{{ $item->nama_mapel }}</td>
-                                <td>{{ $item->guru_pengampu }}</td>
+                            <td>{{ $item->jam }}</td>
+                            <td>{{ $item->nama_mapel }}</td>
+                            <td>{{ $item->guru_pengampu }}</td>
 
                                 <td>
 
@@ -179,7 +179,7 @@
 
             try {
                 const response = await fetch(
-                    '/api/jadwals/' + id, {
+                    '/jadwals/' + id, {
                         method: 'DELETE',
                         credentials: 'include',
                         headers: {
