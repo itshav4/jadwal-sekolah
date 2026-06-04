@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class JadwalController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index()
     {
@@ -17,6 +19,8 @@ class JadwalController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Jadwal::class);
+
         $jadwal = Jadwal::create(
             $request->all()
         );
@@ -34,12 +38,12 @@ class JadwalController extends Controller
         );
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, Jadwal $jadwal)
     {
-        $jadwal = Jadwal::findOrFail($id);
+        $this->authorize('update', $jadwal);
 
         $jadwal->update(
-            $request->all()
+            $request->except('_method')
         );
 
         return response()->json(
@@ -47,9 +51,11 @@ class JadwalController extends Controller
         );
     }
 
-    public function destroy(string $id)
+    public function destroy(Jadwal $jadwal)
     {
-        Jadwal::destroy($id);
+        $this->authorize('delete', $jadwal);
+
+        $jadwal->delete();
 
         return response()->json([
             'message' => 'Data berhasil dihapus'
@@ -66,7 +72,7 @@ class JadwalController extends Controller
                 'hari',
                 $hari
             )->orderBy('jam')
-             ->get();
+                ->get();
         }
 
         return view(

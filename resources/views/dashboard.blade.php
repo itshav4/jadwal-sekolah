@@ -5,186 +5,204 @@
 
     <title>Dashboard Jadwal Sekolah</title>
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>Dashboard Jadwal Sekolah</h2>
+            <h2>Dashboard Jadwal Sekolah</h2>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
 
-            <button class="btn btn-danger">
-                Logout
-            </button>
+                <button class="btn btn-danger">
+                    Logout
+                </button>
 
-        </form>
+            </form>
 
-    </div>
-    <a href="/jadwal/create"
-   class="btn btn-success mb-3">
+        </div>
+        <a href="/jadwal/create"
+            class="btn btn-success mb-3">
 
-    + Tambah Jadwal
-
-</a>
-    <div class="mb-4">
-
-        <a href="/dashboard/Senin"
-           class="btn btn-primary">
-
-            Senin
+            + Tambah Jadwal
 
         </a>
+        <div class="mb-4">
 
-        <a href="/dashboard/Selasa"
-           class="btn btn-success">
+            <a href="/dashboard/Senin"
+                class="btn btn-primary">
 
-            Selasa
+                Senin
 
-        </a>
+            </a>
 
-        <a href="/dashboard/Rabu"
-           class="btn btn-warning">
+            <a href="/dashboard/Selasa"
+                class="btn btn-success">
 
-            Rabu
+                Selasa
 
-        </a>
+            </a>
 
-        <a href="/dashboard/Kamis"
-           class="btn btn-info">
+            <a href="/dashboard/Rabu"
+                class="btn btn-warning">
 
-            Kamis
+                Rabu
 
-        </a>
+            </a>
 
-        <a href="/dashboard/Jumat"
-           class="btn btn-dark">
+            <a href="/dashboard/Kamis"
+                class="btn btn-info">
 
-            Jumat
+                Kamis
 
-        </a>
+            </a>
 
-    </div>
+            <a href="/dashboard/Jumat"
+                class="btn btn-dark">
 
-    @if($hari)
+                Jumat
 
-    <div class="card">
-
-        <div class="card-header bg-primary text-white">
-
-            <h4 class="mb-0">
-                Jadwal Hari {{ $hari }}
-            </h4>
+            </a>
 
         </div>
 
-        <div class="card-body">
+        @if($hari)
 
-            <table class="table table-bordered">
+        <div class="card">
 
-                <thead>
+            <div class="card-header bg-primary text-white">
 
-                <tr>
+                <h4 class="mb-0">
+                    Jadwal Hari {{ $hari }}
+                </h4>
 
-                    <th>Jam</th>
-                    <th>Mapel</th>
-                    <th>Guru</th>
-                    <th>Aksi</th>
+            </div>
 
-                </tr>
+            <div class="card-body">
 
-                </thead>
+                <table class="table table-bordered">
 
-                <tbody>
+                    <thead>
 
-                @forelse($jadwals as $item)
+                        <tr>
 
-                <tr>
+                            <th>Jam</th>
+                            <th>Mapel</th>
+                            <th>Guru</th>
+                            <th>Aksi</th>
 
-                        <<td>{{ $item->jam }}</td>
-                        <td>{{ $item->nama_mapel }}</td>
-                        <td>{{ $item->guru_pengampu }}</td>
+                        </tr>
 
-                        <td>
+                    </thead>
 
-                        <a href="/jadwal/edit/{{ $item->id }}"
-                        class="btn btn-warning btn-sm">
+                    <tbody>
 
-                            Edit
+                        @forelse($jadwals as $item)
 
-                        </a>
+                        <tr>
 
-                        <button
-                        onclick="hapusData({{ $item->id }})"
-                        class="btn btn-danger btn-sm">
+                            <<td>{{ $item->jam }}</td>
+                                <td>{{ $item->nama_mapel }}</td>
+                                <td>{{ $item->guru_pengampu }}</td>
 
-                            Hapus
+                                <td>
 
-                        </button>
+                                    @can('update', $item)
+                                    <a href="/jadwal/edit/{{ $item->id }}"
+                                        class="btn btn-warning btn-sm">
 
-                        </td>
+                                        Edit
 
-                </tr>
+                                    </a>
+                                    @endcan
 
-                @empty
+                                    @can('delete', $item)
+                                    <button
+                                        onclick="hapusData('{{ $item->id }}')"
+                                        class="btn btn-danger btn-sm">
 
-                <tr>
+                                        Hapus
 
-                    <td colspan="3" class="text-center">
+                                    </button>
+                                    @endcan
 
-                        Tidak ada jadwal untuk hari ini
+                                </td>
 
-                    </td>
+                        </tr>
 
-                </tr>
+                        @empty
 
-                @endforelse
+                        <tr>
 
-                </tbody>
+                            <td colspan="3" class="text-center">
 
-            </table>
+                                Tidak ada jadwal untuk hari ini
+
+                            </td>
+
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
+        @else
+
+        <div class="alert alert-info">
+
+            Silakan pilih hari terlebih dahulu.
+
+        </div>
+
+        @endif
+
     </div>
+    <script>
+        async function hapusData(id) {
+            if (!confirm('Yakin hapus data?')) {
+                return;
+            }
 
-    @else
+            try {
+                const response = await fetch(
+                    '/api/jadwals/' + id, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    }
+                );
 
-    <div class="alert alert-info">
+                const data = await response.json();
 
-        Silakan pilih hari terlebih dahulu.
+                if (!response.ok) {
+                    alert('Error: ' + (data.message || 'Tidak bisa menghapus data'));
+                    return;
+                }
 
-    </div>
+                alert('Data berhasil dihapus');
+                location.reload();
 
-    @endif
-
-</div>
-<script>
-
-async function hapusData(id)
-{
-    if(!confirm('Yakin hapus data?'))
-    {
-        return;
-    }
-
-    await fetch(
-        '/api/jadwals/' + id,
-        {
-            method:'DELETE'
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
         }
-    );
-
-    location.reload();
-}
-
-</script>
+    </script>
 </body>
 
 </html>
